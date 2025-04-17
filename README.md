@@ -16,7 +16,7 @@
 1. Clone dự án về máy của bạn:
 
 ```
-git clone [url-repository]
+git clone https://github.com/OgaTatsumii/tetflix.git
 ```
 
 2. Import database từ file `database.sql`
@@ -49,4 +49,4 @@ src/
 
 ## Người đóng góp
 
--   [Tên của bạn]
+-   OgaTatsumii
