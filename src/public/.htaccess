@@ -1,0 +1,27 @@
+RewriteEngine On
+RewriteBase /
+
+# Nếu file/directory không tồn tại, chuyển hướng về index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Cho phép truy cập trực tiếp các file tĩnh
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Bảo vệ file .htaccess
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Thiết lập charset mặc định
+AddDefaultCharset UTF-8
+
+# Bật rewrite cho các file PHP
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch> 

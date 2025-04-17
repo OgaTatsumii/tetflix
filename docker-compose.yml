@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+    # Main PHP application
+    web:
+        build:
+            context: ./src
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+        volumes:
+            - ./src:/var/www/html
+        depends_on:
+            - db
+        environment:
+            - DB_HOST=db
+            - DB_USER=netflix_user
+            - DB_PASS=netflix_password
+            - DB_NAME=netflix_db
+            - IMAGE_SERVICE_URL=http://image-service:8000
+
+    # MySQL Database
+    db:
+        image: mysql:8.0
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=root_password
+            - MYSQL_DATABASE=netflix_db
+            - MYSQL_USER=netflix_user
+            - MYSQL_PASSWORD=netflix_password
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    # FastAPI Image Service
+    image-service:
+        build:
+            context: ./image-service
+            dockerfile: Dockerfile
+        ports:
+            - "8000:8000"
+        volumes:
+            # Sử dụng bind mount cho code source
+            - ./image-service/main.py:/app/main.py
+            - ./image-service/requirements.txt:/app/requirements.txt
+            - ./image-service/public:/app/public
+            # Sử dụng volume riêng cho thư mục storage để tránh ghi đè quyền
+            - image_storage:/app/storage
+
+volumes:
+    mysql_data:
+    image_storage:

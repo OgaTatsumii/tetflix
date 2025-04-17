@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Existing rules...
+# ... existing code ...
+
+# Map /uploads/avatars to src/uploads/avatars
+RewriteRule ^uploads/avatars/(.*)$ src/uploads/avatars/$1 [L]
+
+# Route cho trang chi tiết phim
+RewriteRule ^movie$ src/views/movie-detail.php [L]
+
+# ... existing code ... 

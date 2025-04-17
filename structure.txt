@@ -1,0 +1,65 @@
+├── database/
+│   ├── init.sql
+├── image-service/
+│   ├── Dockerfile
+│   ├── main.py
+│   ├── public/
+│   │   ├── index.html
+│   ├── requirements.txt
+│   ├── storage/
+│   ├── __pycache__/
+│   │   ├── main.cpython-39.pyc
+├── src/
+│   ├── apache-config.conf
+│   ├── components/
+│   ├── config/
+│   │   ├── database.php
+│   ├── controllers/
+│   │   ├── AdminController.php
+│   │   ├── AuthController.php
+│   │   ├── CommentController.php
+│   │   ├── MovieController.php
+│   ├── Dockerfile
+│   ├── models/
+│   │   ├── Comment.php
+│   │   ├── Movie.php
+│   │   ├── User.php
+│   ├── public/
+│   │   ├── .htaccess
+│   │   ├── assets/
+│   │   │   ├── css/
+│   │   │   │   ├── admin.css
+│   │   │   │   ├── style.css
+│   │   │   │   ├── toast.css
+│   │   │   ├── images/
+│   │   │   │   ├── netflix-logo.png
+│   │   │   ├── js/
+│   │   │   │   ├── main.js
+│   │   │   │   ├── toast.js
+│   │   ├── css/
+│   │   │   ├── style.css
+│   │   ├── index.php
+│   │   ├── js/
+│   │   │   ├── main.js
+│   ├── test_db.php
+│   ├── uploads/
+│   ├── views/
+│   │   ├── admin/
+│   │   │   ├── add-movie.php
+│   │   │   ├── categories.php
+│   │   │   ├── dashboard.php
+│   │   │   ├── edit-movie.php
+│   │   │   ├── episodes.php
+│   │   │   ├── movies.php
+│   │   │   ├── premium-users.php
+│   │   │   ├── users.php
+│   │   ├── admin-panel.php
+│   │   ├── home.php
+│   │   ├── layout.php
+│   │   ├── login.php
+│   │   ├── logout.php
+│   │   ├── movie-detail.php
+│   │   ├── register.php
+│   │   ├── search.php
+├── docker-compose.yml
+├── README.md

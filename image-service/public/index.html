@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Movie Image Service - Path Traversal Demo</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #141414;
+                color: #fff;
+            }
+            h1,
+            h2,
+            h3 {
+                color: #e50914;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .section {
+                background-color: #222;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            .gallery {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+            .image-card {
+                border: 1px solid #333;
+                border-radius: 5px;
+                overflow: hidden;
+                background-color: #333;
+            }
+            .image-card img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+            .image-card .info {
+                padding: 10px;
+            }
+            .image-card .actions {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                background-color: #444;
+            }
+            .button {
+                background-color: #e50914;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 14px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 4px;
+            }
+            .button.secondary {
+                background-color: #333;
+            }
+            .button.delete {
+                background-color: #b00;
+            }
+            .button.view {
+                background-color: #0066cc;
+            }
+            input[type="file"],
+            input[type="text"] {
+                margin-bottom: 10px;
+                background-color: #333;
+                color: #fff;
+                border: 1px solid #555;
+                padding: 8px;
+                border-radius: 4px;
+                width: 100%;
+            }
+            .progress-bar {
+                height: 20px;
+                background-color: #333;
+                border-radius: 5px;
+                margin-top: 10px;
+                overflow: hidden;
+                display: none;
+            }
+            .progress {
+                height: 100%;
+                background-color: #e50914;
+                width: 0%;
+                transition: width 0.3s;
+            }
+            .error {
+                color: #ff6b6b;
+                margin-top: 10px;
+            }
+            .success {
+                color: #6bff6b;
+                margin-top: 10px;
+            }
+            .message {
+                margin-top: 10px;
+                padding: 10px;
+                border-radius: 4px;
+            }
+            .tabs {
+                display: flex;
+                margin-bottom: 15px;
+            }
+            .tab {
+                padding: 10px 20px;
+                background-color: #333;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                margin-right: 5px;
+            }
+            .tab.active {
+                background-color: #e50914;
+            }
+            .tab-content {
+                display: none;
+            }
+            .tab-content.active {
+                display: block;
+            }
+            .vulnerability-section {
+                background-color: #331111;
+                border: 1px solid #e50914;
+                padding: 15px;
+                margin-top: 20px;
+                border-radius: 5px;
+            }
+            .code-sample {
+                background-color: #222;
+                padding: 10px;
+                border-radius: 4px;
+                margin: 10px 0;
+                font-family: monospace;
+                white-space: pre-wrap;
+            }
+            .exploit-demo {
+                background-color: #1a1a1a;
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 15px;
+            }
+            .file-preview {
+                margin-top: 15px;
+                padding: 10px;
+                background-color: #222;
+                border-radius: 4px;
+                font-family: monospace;
+                white-space: pre-wrap;
+                max-height: 300px;
+                overflow: auto;
+            }
+            .demo-image {
+                max-width: 100%;
+                margin: 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Movie Image Service - Path Traversal Demo</h1>
+
+        <div class="container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="upload-tab">
+                    Upload Images
+                </button>
+                <button class="tab" data-tab="gallery-tab">
+                    Image Gallery
+                </button>
+                <button class="tab" data-tab="vulnerability-tab">
+                    Path Traversal
+                </button>
+            </div>
+
+            <!-- Upload Tab -->
+            <div class="tab-content active" id="upload-tab">
+                <div class="section">
+                    <h2>Upload Movie Poster/Image</h2>
+                    <form id="upload-form">
+                        <input
+                            type="file"
+                            id="image-file"
+                            accept="image/*"
+                            required
+                        />
+                        <button type="submit" class="button">Upload</button>
+                        <div class="progress-bar" id="progress-container">
+                            <div class="progress" id="progress"></div>
+                        </div>
+                        <div id="upload-message" class="message"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div class="tab-content" id="gallery-tab">
+                <div class="section">
+                    <h2>Movie Image Gallery</h2>
+                    <div class="gallery" id="image-gallery">
+                        <!-- Images will be loaded here -->
+                        <div id="loading">Loading images...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vulnerability Tab -->
+            <div class="tab-content" id="vulnerability-tab">
+                <div class="section">
+                    <h2>Path Traversal Vulnerability Demo</h2>
+                    <div class="vulnerability-section">
+                        <h3>Lỗ hổng Path Traversal là gì?</h3>
+                        <p>
+                            Path Traversal (hay Directory Traversal) là một lỗ
+                            hổng bảo mật cho phép kẻ tấn công truy cập các file
+                            và thư mục nằm ngoài thư mục gốc của ứng dụng. Thông
+                            qua việc sử dụng các chuỗi như "../" trong đường
+                            dẫn, kẻ tấn công có thể di chuyển ngược lên cấp thư
+                            mục cha và truy cập vào bất kỳ file nào trên hệ
+                            thống mà ứng dụng có quyền đọc.
+                        </p>
+
+                        <h3>Cách khai thác:</h3>
+                        <div class="code-sample">
+                            /poster/../../etc/passwd # Truy cập file passwd
+                            /poster/../../../etc/hosts # Truy cập file hosts
+                            /image-by-path?path=/etc/passwd # Truy cập trực tiếp
+                            bằng tham số path
+                        </div>
+
+                        <div class="exploit-demo">
+                            <h3>Thử nghiệm khai thác:</h3>
+
+                            <h4>1. Truy cập file theo đường dẫn:</h4>
+                            <input
+                                type="text"
+                                id="path-input"
+                                placeholder="Nhập đường dẫn (ví dụ: ../../etc/passwd)"
+                                value="../../etc/passwd"
+                            />
+                            <button class="button" id="access-path-btn">
+                                Truy cập
+                            </button>
+                            <div id="path-result" class="message"></div>
+
+                            <h4>2. Truy cập file trực tiếp:</h4>
+                            <input
+                                type="text"
+                                id="direct-path-input"
+                                placeholder="Nhập đường dẫn đầy đủ (ví dụ: /etc/passwd)"
+                                value="/etc/passwd"
+                            />
+                            <button class="button" id="access-direct-btn">
+                                Truy cập trực tiếp
+                            </button>
+                            <div id="direct-result" class="message"></div>
+
+                            <h4>3. Upload file có chứa path traversal:</h4>
+                            <p>
+                                Thử tải lên file với tên chứa "../" để ghi file
+                                ra ngoài thư mục lưu trữ:
+                            </p>
+                            <form id="exploit-upload-form">
+                                <input type="file" id="exploit-file" required />
+                                <input
+                                    type="text"
+                                    id="exploit-filename"
+                                    placeholder="Tên file đích (ví dụ: ../../test.txt)"
+                                    value="../../exploit.txt"
+                                />
+                                <button type="submit" class="button">
+                                    Upload Exploit
+                                </button>
+                            </form>
+                            <div id="exploit-message" class="message"></div>
+                        </div>
+
+                        <h3>Kết quả</h3>
+                        <div class="file-preview" id="file-content"></div>
+                        <div id="file-image-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // API base URL
+            const API_URL = "http://localhost:8000";
+
+            // Tab Functionality
+            document.querySelectorAll(".tab").forEach((tab) => {
+                tab.addEventListener("click", function () {
+                    // Remove active class from all tabs and contents
+                    document
+                        .querySelectorAll(".tab")
+                        .forEach((t) => t.classList.remove("active"));
+                    document
+                        .querySelectorAll(".tab-content")
+                        .forEach((c) => c.classList.remove("active"));
+
+                    // Add active class to clicked tab
+                    this.classList.add("active");
+
+                    // Show corresponding content
+                    const tabId = this.getAttribute("data-tab");
+                    document.getElementById(tabId).classList.add("active");
+                });
+            });
+
+            // Function to load and display images
+            async function loadImages() {
+                try {
+                    const response = await fetch(`${API_URL}/images`);
+                    const data = await response.json();
+
+                    const gallery = document.getElementById("image-gallery");
+                    gallery.innerHTML = "";
+
+                    if (data.files.length === 0) {
+                        gallery.innerHTML =
+                            "<p>No images found. Upload some images to get started!</p>";
+                        return;
+                    }
+
+                    // Sort images by upload time (newest first)
+                    data.files.sort(
+                        (a, b) =>
+                            new Date(b.upload_time) - new Date(a.upload_time)
+                    );
+
+                    data.files.forEach((image) => {
+                        const imageCard = document.createElement("div");
+                        imageCard.className = "image-card";
+
+                        // Format the size to be more readable
+                        const formattedSize = formatFileSize(image.size);
+
+                        // Format the date
+                        const uploadDate = new Date(
+                            image.upload_time
+                        ).toLocaleString();
+
+                        imageCard.innerHTML = `
+                            <img src="${API_URL}/image/${image.id}" alt="${
+                            image.original_filename
+                        }">
+                            <div class="info">
+                                <strong>${truncateString(
+                                    image.original_filename,
+                                    20
+                                )}</strong>
+                                <p>Size: ${formattedSize}</p>
+                                <p>Uploaded: ${uploadDate}</p>
+                            </div>
+                            <div class="actions">
+                                <a href="${API_URL}/image/${
+                            image.id
+                        }" target="_blank" class="button view">View</a>
+                                <button class="button delete" data-id="${
+                                    image.id
+                                }">Delete</button>
+                            </div>
+                            <div class="vulnerability-info">
+                                <p>Direct access: <a href="${API_URL}/poster/${
+                            image.filename
+                        }" target="_blank">/poster/${image.filename}</a></p>
+                            </div>
+                        `;
+
+                        gallery.appendChild(imageCard);
+                    });
+
+                    // Add event listeners for delete buttons
+                    document
+                        .querySelectorAll(".button.delete")
+                        .forEach((button) => {
+                            button.addEventListener("click", async (e) => {
+                                if (
+                                    confirm(
+                                        "Are you sure you want to delete this image?"
+                                    )
+                                ) {
+                                    const id = e.target.getAttribute("data-id");
+                                    await deleteImage(id);
+                                }
+                            });
+                        });
+                } catch (error) {
+                    console.error("Error loading images:", error);
+                    document.getElementById("image-gallery").innerHTML =
+                        '<p class="error">Error loading images. Please try again later.</p>';
+                }
+            }
+
+            // Function to handle file upload
+            document
+                .getElementById("upload-form")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const fileInput = document.getElementById("image-file");
+                    if (!fileInput.files.length) {
+                        showMessage(
+                            "Please select a file to upload",
+                            "error",
+                            "upload-message"
+                        );
+                        return;
+                    }
+
+                    const file = fileInput.files[0];
+
+                    // Check file type
+                    const fileExtension = file.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase();
+                    const allowedExtensions = [
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "gif",
+                        "bmp",
+                        "webp",
+                    ];
+
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        showMessage(
+                            "Please select a valid image file (jpg, jpeg, png, gif, bmp, webp)",
+                            "error",
+                            "upload-message"
+                        );
+                        return;
+                    }
+
+                    // Check file size (10MB maximum)
+                    const maxSize = 10 * 1024 * 1024; // 10MB
+                    if (file.size > maxSize) {
+                        showMessage(
+                            `File size exceeds the maximum allowed (10MB)`,
+                            "error",
+                            "upload-message"
+                        );
+                        return;
+                    }
+
+                    // Show progress bar
+                    const progressContainer =
+                        document.getElementById("progress-container");
+                    const progressBar = document.getElementById("progress");
+                    progressContainer.style.display = "block";
+                    progressBar.style.width = "0%";
+
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    try {
+                        // Use XMLHttpRequest to track upload progress
+                        const xhr = new XMLHttpRequest();
+
+                        xhr.upload.addEventListener("progress", (event) => {
+                            if (event.lengthComputable) {
+                                const percentComplete =
+                                    (event.loaded / event.total) * 100;
+                                progressBar.style.width = percentComplete + "%";
+                            }
+                        });
+
+                        xhr.addEventListener("load", () => {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                showMessage(
+                                    "File uploaded successfully!",
+                                    "success",
+                                    "upload-message"
+                                );
+                                fileInput.value = ""; // Reset the file input
+                                loadImages(); // Reload the image gallery
+                            } else {
+                                const error = JSON.parse(xhr.responseText);
+                                showMessage(
+                                    `Error: ${error.detail || "Upload failed"}`,
+                                    "error",
+                                    "upload-message"
+                                );
+                            }
+                            progressContainer.style.display = "none";
+                        });
+
+                        xhr.addEventListener("error", () => {
+                            showMessage(
+                                "Network error occurred",
+                                "error",
+                                "upload-message"
+                            );
+                            progressContainer.style.display = "none";
+                        });
+
+                        xhr.open("POST", `${API_URL}/upload`);
+                        xhr.send(formData);
+                    } catch (error) {
+                        showMessage(
+                            `Error: ${error.message}`,
+                            "error",
+                            "upload-message"
+                        );
+                        progressContainer.style.display = "none";
+                    }
+                });
+
+            // Function to delete an image
+            async function deleteImage(id) {
+                try {
+                    const response = await fetch(`${API_URL}/image/${id}`, {
+                        method: "DELETE",
+                    });
+
+                    if (response.ok) {
+                        showMessage(
+                            "Image deleted successfully",
+                            "success",
+                            "upload-message"
+                        );
+                        loadImages(); // Reload images
+                    } else {
+                        const error = await response.json();
+                        showMessage(
+                            `Error: ${error.detail || "Delete failed"}`,
+                            "error",
+                            "upload-message"
+                        );
+                    }
+                } catch (error) {
+                    console.error("Error deleting image:", error);
+                    showMessage(
+                        "Error deleting image",
+                        "error",
+                        "upload-message"
+                    );
+                }
+            }
+
+            // Path Traversal Demo Functions
+            document
+                .getElementById("access-path-btn")
+                .addEventListener("click", async () => {
+                    const path = document.getElementById("path-input").value;
+                    if (!path) {
+                        showMessage(
+                            "Please enter a path",
+                            "error",
+                            "path-result"
+                        );
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(
+                            `${API_URL}/poster/${path}`
+                        );
+
+                        if (response.ok) {
+                            const contentType =
+                                response.headers.get("content-type");
+
+                            if (contentType && contentType.includes("image")) {
+                                // Display image
+                                const imageUrl = `${API_URL}/poster/${path}`;
+                                document.getElementById(
+                                    "file-image-container"
+                                ).innerHTML = `
+                                <p>Image found at path: ${path}</p>
+                                <img src="${imageUrl}" alt="Retrieved image" class="demo-image">
+                            `;
+                                document.getElementById(
+                                    "file-content"
+                                ).textContent = "";
+                                showMessage(
+                                    "Image retrieved successfully",
+                                    "success",
+                                    "path-result"
+                                );
+                            } else {
+                                // Display text content
+                                const text = await response.text();
+                                document.getElementById(
+                                    "file-content"
+                                ).textContent = text;
+                                document.getElementById(
+                                    "file-image-container"
+                                ).innerHTML = "";
+                                showMessage(
+                                    "File retrieved successfully",
+                                    "success",
+                                    "path-result"
+                                );
+                            }
+                        } else {
+                            const error = await response.text();
+                            showMessage(
+                                `Error: ${error || "File not found"}`,
+                                "error",
+                                "path-result"
+                            );
+                            document.getElementById(
+                                "file-content"
+                            ).textContent = "";
+                            document.getElementById(
+                                "file-image-container"
+                            ).innerHTML = "";
+                        }
+                    } catch (error) {
+                        console.error("Error accessing file:", error);
+                        showMessage(
+                            `Error: ${error.message}`,
+                            "error",
+                            "path-result"
+                        );
+                        document.getElementById("file-content").textContent =
+                            "";
+                        document.getElementById(
+                            "file-image-container"
+                        ).innerHTML = "";
+                    }
+                });
+
+            document
+                .getElementById("access-direct-btn")
+                .addEventListener("click", async () => {
+                    const path =
+                        document.getElementById("direct-path-input").value;
+                    if (!path) {
+                        showMessage(
+                            "Please enter a path",
+                            "error",
+                            "direct-result"
+                        );
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(
+                            `${API_URL}/image-by-path?path=${encodeURIComponent(
+                                path
+                            )}`
+                        );
+
+                        if (response.ok) {
+                            const contentType =
+                                response.headers.get("content-type");
+
+                            if (contentType && contentType.includes("image")) {
+                                // Display image
+                                const imageUrl = `${API_URL}/image-by-path?path=${encodeURIComponent(
+                                    path
+                                )}`;
+                                document.getElementById(
+                                    "file-image-container"
+                                ).innerHTML = `
+                                <p>Image found at path: ${path}</p>
+                                <img src="${imageUrl}" alt="Retrieved image" class="demo-image">
+                            `;
+                                document.getElementById(
+                                    "file-content"
+                                ).textContent = "";
+                                showMessage(
+                                    "Image retrieved successfully",
+                                    "success",
+                                    "direct-result"
+                                );
+                            } else {
+                                // Display text content
+                                const text = await response.text();
+                                document.getElementById(
+                                    "file-content"
+                                ).textContent = text;
+                                document.getElementById(
+                                    "file-image-container"
+                                ).innerHTML = "";
+                                showMessage(
+                                    "File retrieved successfully",
+                                    "success",
+                                    "direct-result"
+                                );
+                            }
+                        } else {
+                            const error = await response.text();
+                            showMessage(
+                                `Error: ${error || "File not found"}`,
+                                "error",
+                                "direct-result"
+                            );
+                            document.getElementById(
+                                "file-content"
+                            ).textContent = "";
+                            document.getElementById(
+                                "file-image-container"
+                            ).innerHTML = "";
+                        }
+                    } catch (error) {
+                        console.error("Error accessing file:", error);
+                        showMessage(
+                            `Error: ${error.message}`,
+                            "error",
+                            "direct-result"
+                        );
+                        document.getElementById("file-content").textContent =
+                            "";
+                        document.getElementById(
+                            "file-image-container"
+                        ).innerHTML = "";
+                    }
+                });
+
+            // Handle Path Traversal Exploit Upload
+            document
+                .getElementById("exploit-upload-form")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const fileInput = document.getElementById("exploit-file");
+                    if (!fileInput.files.length) {
+                        showMessage(
+                            "Please select a file to upload",
+                            "error",
+                            "exploit-message"
+                        );
+                        return;
+                    }
+
+                    const file = fileInput.files[0];
+                    const customFilename =
+                        document.getElementById("exploit-filename").value;
+
+                    if (!customFilename) {
+                        showMessage(
+                            "Please enter a target filename",
+                            "error",
+                            "exploit-message"
+                        );
+                        return;
+                    }
+
+                    const formData = new FormData();
+
+                    // Create a new File object with the custom filename
+                    const customFile = new File([file], customFilename, {
+                        type: file.type,
+                    });
+                    formData.append("file", customFile);
+
+                    try {
+                        const response = await fetch(`${API_URL}/upload`, {
+                            method: "POST",
+                            body: formData,
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            showMessage(
+                                `File uploaded successfully with path traversal filename: ${customFilename}`,
+                                "success",
+                                "exploit-message"
+                            );
+                        } else {
+                            const error = await response.json();
+                            showMessage(
+                                `Error: ${error.detail || "Upload failed"}`,
+                                "error",
+                                "exploit-message"
+                            );
+                        }
+                    } catch (error) {
+                        console.error("Error uploading file:", error);
+                        showMessage(
+                            `Error: ${error.message}`,
+                            "error",
+                            "exploit-message"
+                        );
+                    }
+                });
+
+            // Helper function to show messages
+            function showMessage(message, type, elementId) {
+                const messageElement = document.getElementById(elementId);
+                messageElement.textContent = message;
+                messageElement.className = `message ${type}`;
+            }
+
+            // Helper function to format file size
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + " bytes";
+                else if (bytes < 1048576)
+                    return (bytes / 1024).toFixed(2) + " KB";
+                else return (bytes / 1048576).toFixed(2) + " MB";
+            }
+
+            // Helper function to truncate long strings
+            function truncateString(str, maxLength) {
+                if (str.length > maxLength) {
+                    return str.substring(0, maxLength - 3) + "...";
+                }
+                return str;
+            }
+
+            // Load images when the page loads
+            window.addEventListener("load", loadImages);
+        </script>
+    </body>
+</html>
