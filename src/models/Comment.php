@@ -15,16 +15,15 @@ class Comment
         $this->conn = $db;
     }
 
-    // Sửa lỗ hổng XSS
+    // Cố tình tạo lỗ hổng XSS
     public function addComment($user_id, $movie_id, $comment)
     {
         $query = "INSERT INTO " . $this->table_name . " (user_id, movie_id, comment, created_at) VALUES (?, ?, ?, NOW())";
         $stmt = $this->conn->prepare($query);
-        // Làm sạch comment để chống XSS
-        $sanitized_comment = htmlspecialchars(strip_tags($comment));
+        // Bỏ qua việc làm sạch comment để tạo lỗ hổng XSS
         $stmt->bindParam(1, $user_id);
         $stmt->bindParam(2, $movie_id);
-        $stmt->bindParam(3, $sanitized_comment);
+        $stmt->bindParam(3, $comment);
         return $stmt->execute();
     }
 

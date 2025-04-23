@@ -14,6 +14,24 @@ class MovieController
         $this->movie = new Movie($this->db);
     }
 
+    // Get unique genres for filter
+    public function getUniqueGenres()
+    {
+        return $this->movie->getUniqueGenres();
+    }
+
+    // Get unique years for filter
+    public function getUniqueYears()
+    {
+        return $this->movie->getUniqueYears();
+    }
+
+    // Get movies with filters
+    public function getAllMoviesWithFilters($genre = '', $year = '', $status = '', $keyword = '')
+    {
+        return $this->movie->getAllMoviesWithFilters($genre, $year, $status, $keyword);
+    }
+
     // Intentionally vulnerable to SQL injection
     public function searchMovies()
     {

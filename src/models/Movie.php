@@ -23,14 +23,17 @@ class Movie
         $this->conn = $db;
     }
 
-    // Sửa lỗ hổng SQL injection
+    // Intentionally vulnerable to Blind SQL Injection
     public function search($keyword)
     {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE title LIKE ? OR description LIKE ?";
-        $searchPattern = "%" . $keyword . "%";
+        // WARNING: This is intentionally vulnerable to SQL injection for educational purposes
+        // DO NOT use this in production!
+        $query = "SELECT * FROM " . $this->table_name . " WHERE title LIKE '%" . $keyword . "%' OR description LIKE '%" . $keyword . "%'";
+
+        // For blind SQL injection testing, we'll add a sleep if the condition is true
+        // Example payload: test' AND IF(SUBSTRING((SELECT password FROM users WHERE username='admin'),1,1)='a',SLEEP(2),0)-- -
+
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $searchPattern);
-        $stmt->bindParam(2, $searchPattern);
         $stmt->execute();
         return $stmt;
     }
@@ -85,48 +88,40 @@ class Movie
 
     public function getAllMoviesWithFilters($genreFilter = '', $yearFilter = '', $statusFilter = '', $searchTerm = '')
     {
+        // WARNING: This is intentionally vulnerable to SQL injection for educational purposes
+        // DO NOT use this in production!
+
         $query = "SELECT * FROM " . $this->table_name . " WHERE 1=1";
-        $params = [];
-        $paramIndex = 1;
 
         if (!empty($genreFilter)) {
-            $query .= " AND genre = ?";
-            $params[$paramIndex++] = $genreFilter;
+            $query .= " AND genre = '" . $genreFilter . "'";
         }
 
         if (!empty($yearFilter)) {
-            $query .= " AND release_year = ?";
-            $params[$paramIndex++] = $yearFilter;
+            $query .= " AND release_year = '" . $yearFilter . "'";
         }
 
         if ($statusFilter !== '') {
-            $query .= " AND is_premium = ?";
-            $params[$paramIndex++] = $statusFilter;
+            $query .= " AND is_premium = '" . $statusFilter . "'";
         }
 
         if (!empty($searchTerm)) {
-            $query .= " AND (title LIKE ? OR description LIKE ?)";
-            $searchPattern = "%" . $searchTerm . "%";
-            $params[$paramIndex++] = $searchPattern;
-            $params[$paramIndex++] = $searchPattern;
+            $query .= " AND (title LIKE '%" . $searchTerm . "%' OR description LIKE '%" . $searchTerm . "%')";
         }
 
         $query .= " ORDER BY id DESC";
 
+        // Example of Blind SQL Injection vulnerability:
+        // searchTerm = test' AND (SELECT CASE WHEN (SELECT password FROM users WHERE username='admin' AND LENGTH(password)>5) THEN pg_sleep(5) ELSE pg_sleep(0) END)--
+
         $stmt = $this->conn->prepare($query);
-
-        // Bind các tham số
-        foreach ($params as $i => $param) {
-            $stmt->bindValue($i, $param);
-        }
-
         $stmt->execute();
         return $stmt;
     }
 
     public function getUniqueGenres()
     {
-        $query = "SELECT DISTINCT genre FROM " . $this->table_name . " ORDER BY genre";
+        $query = "SELECT DISTINCT genre FROM " . $this->table_name . " WHERE genre IS NOT NULL ORDER BY genre";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -134,7 +129,7 @@ class Movie
 
     public function getUniqueYears()
     {
-        $query = "SELECT DISTINCT release_year FROM " . $this->table_name . " ORDER BY release_year DESC";
+        $query = "SELECT DISTINCT release_year FROM " . $this->table_name . " WHERE release_year IS NOT NULL ORDER BY release_year DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;

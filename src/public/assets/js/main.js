@@ -1,11 +1,5 @@
 // Intentionally vulnerable to XSS
 document.addEventListener("DOMContentLoaded", function () {
-    // Load last search from localStorage
-    const lastSearch = localStorage.getItem("lastSearch");
-    if (lastSearch) {
-        document.querySelector('input[name="keyword"]').value = lastSearch;
-    }
-
     // Load last username from localStorage
     const lastUsername = localStorage.getItem("lastUsername");
     if (lastUsername) {

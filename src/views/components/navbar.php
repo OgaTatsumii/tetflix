@@ -24,16 +24,23 @@
 
             <div class="header-right">
                 <div class="search-box">
-                    <input type="text" class="search-input" placeholder="Tìm kiếm phim...">
-                    <button class="search-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
+                    <form id="searchForm" onsubmit="return false;">
+                        <input type="text" name="keyword" class="search-input" placeholder="Nhập tên phim cần tìm..."
+                            autocomplete="off" value="<?php
+                            if (strpos($_SERVER['REQUEST_URI'], '/search') === 0 && isset($_GET['keyword'])) {
+                                echo htmlspecialchars($_GET['keyword']);
+                            }
+                            ?>">
+                        <button type="button" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
                 </div>
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="user-profile">
                     <a href="/profile" class="profile-link">
                         <?php if (isset($_SESSION['avatar_url']) && $_SESSION['avatar_url']): ?>
-                        <img src="<?php echo htmlspecialchars($_SESSION['avatar_url']); ?>" alt="Avatar"
+                        <img src="<?php echo htmlspecialchars($_SESSION['avatar_url']); ?>" alt="Ảnh đại diện"
                             class="user-avatar">
                         <?php else: ?>
                         <i class="fas fa-user"></i>

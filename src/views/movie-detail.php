@@ -166,7 +166,7 @@ ob_start();
                             class="comment-date"><?php echo date('d/m/Y H:i', strtotime($comment['created_at'])); ?></span>
                     </div>
                     <div class="comment-body">
-                        <?php echo nl2br(htmlspecialchars($comment['comment'])); ?>
+                        <?php echo nl2br($comment['comment']); ?>
                     </div>
                     <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $comment['user_id']): ?>
                     <div class="comment-actions">

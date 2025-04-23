@@ -307,13 +307,14 @@
 
 
     // Xử lý tìm kiếm
+    const searchForm = document.getElementById('searchForm');
     const searchInput = document.querySelector('.search-input');
     const searchBtn = document.querySelector('.search-btn');
 
     function handleSearch() {
         const searchTerm = searchInput.value.trim();
         if (searchTerm) {
-            window.location.href = `/search?q=${encodeURIComponent(searchTerm)}`;
+            window.location.href = `/search?keyword=${encodeURIComponent(searchTerm)}`;
         }
     }
 
