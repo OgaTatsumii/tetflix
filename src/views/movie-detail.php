@@ -190,24 +190,25 @@ ob_start();
     <div class="container">
         <div class="related-section">
             <h2 class="section-title">Phim tương tự</h2>
-            <div class="movie-grid">
+            <div class="similar-movies-grid">
                 <?php
                 $count = 0;
                 while ($related = $related_movies->fetch(PDO::FETCH_ASSOC)):
-                    // Bỏ qua phim hiện tại và chỉ hiển thị tối đa 6 phim
-                    if ($related['id'] == $movie_id || $count >= 6)
-                        continue;
+                    if ($related['id'] == $movie_id || $count >= 6) continue;
                     $count++;
-                    ?>
-                <div class="movie-card">
+                ?>
+                <div class="similar-movie-card">
                     <a href="/movie?id=<?php echo $related['id']; ?>">
-                        <img src="<?php echo htmlspecialchars($related['poster_path']); ?>"
-                            alt="<?php echo htmlspecialchars($related['title']); ?>" class="movie-poster"
-                            onerror="this.src='/assets/images/default-poster.jpg'">
-                        <div class="movie-info">
-                            <h3><?php echo htmlspecialchars($related['title']); ?></h3>
-                            <p><?php echo $related['release_year']; ?></p>
+                        <div class="poster-wrapper">
+                            <img src="<?php echo htmlspecialchars($related['poster_path']); ?>"
+                                alt="<?php echo htmlspecialchars($related['title']); ?>" class="similar-movie-poster"
+                                onerror="this.src='/assets/images/default-poster.jpg'">
+                            <?php if (!empty($related['is_premium'])): ?>
+                                <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+                            <?php endif; ?>
                         </div>
+                        <div class="similar-movie-title"><?php echo htmlspecialchars($related['title']); ?></div>
+                        <div class="similar-movie-year"><?php echo $related['release_year']; ?></div>
                     </a>
                 </div>
                 <?php endwhile; ?>
@@ -511,6 +512,47 @@ ob_start();
     }
 
 
+}
+
+.similar-movies-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 16px;
+}
+.similar-movie-card {
+  width: 160px;
+  background: #181818;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: left;
+}
+.similar-movie-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.similar-movie-poster {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+  border-radius: 10px 10px 0 0;
+}
+.similar-movie-title {
+  font-weight: bold;
+  color: #fff;
+  padding: 8px 8px 0 8px;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.similar-movie-year {
+  color: #aaa;
+  padding: 0 8px 8px 8px;
+  font-size: 0.9rem;
 }
 </style>
 

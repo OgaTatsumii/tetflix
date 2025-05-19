@@ -110,6 +110,7 @@ class Movie
         }
 
         $query .= " ORDER BY id DESC";
+        var_dump($query);
 
         // Example of Blind SQL Injection vulnerability:
         // searchTerm = test' AND (SELECT CASE WHEN (SELECT password FROM users WHERE username='admin' AND LENGTH(password)>5) THEN pg_sleep(5) ELSE pg_sleep(0) END)--

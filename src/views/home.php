@@ -28,9 +28,14 @@ ob_start();
                 <?php while ($movie = $latest_movies->fetch(PDO::FETCH_ASSOC)): ?>
                 <div class="movie-card">
                     <a href="/movie?id=<?php echo $movie['id']; ?>">
-                        <img src="<?php echo $movie['poster_path']; ?>"
-                            alt="<?php echo htmlspecialchars($movie['title']); ?>" class="movie-poster"
-                            onerror="this.src='/assets/images/default-poster.jpg'">
+                        <div class="poster-wrapper">
+                            <img src="<?php echo $movie['poster_path']; ?>"
+                                alt="<?php echo htmlspecialchars($movie['title']); ?>" class="movie-poster"
+                                onerror="this.src='/assets/images/default-poster.jpg'">
+                            <?php if (!empty($movie['is_premium'])): ?>
+                                <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+                            <?php endif; ?>
+                        </div>
                         <div class="movie-info">
                             <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
                             <p><?php echo $movie['release_year']; ?></p>
@@ -49,9 +54,14 @@ ob_start();
                 <?php while ($movie = $action_movies->fetch(PDO::FETCH_ASSOC)): ?>
                 <div class="movie-card">
                     <a href="/movie?id=<?php echo $movie['id']; ?>">
-                        <img src="<?php echo $movie['poster_path']; ?>"
-                            alt="<?php echo htmlspecialchars($movie['title']); ?>" class="movie-poster"
-                            onerror="this.src='/assets/images/default-poster.jpg'">
+                        <div class="poster-wrapper">
+                            <img src="<?php echo $movie['poster_path']; ?>"
+                                alt="<?php echo htmlspecialchars($movie['title']); ?>" class="movie-poster"
+                                onerror="this.src='/assets/images/default-poster.jpg'">
+                            <?php if (!empty($movie['is_premium'])): ?>
+                                <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+                            <?php endif; ?>
+                        </div>
                         <div class="movie-info">
                             <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
                             <p><?php echo $movie['release_year']; ?></p>
@@ -70,9 +80,14 @@ ob_start();
                 <?php while ($movie = $comedy_movies->fetch(PDO::FETCH_ASSOC)): ?>
                 <div class="movie-card">
                     <a href="/movie?id=<?php echo $movie['id']; ?>">
-                        <img src="<?php echo $movie['poster_path']; ?>"
-                            alt="<?php echo htmlspecialchars($movie['title']); ?>" class="movie-poster"
-                            onerror="this.src='/assets/images/default-poster.jpg'">
+                        <div class="poster-wrapper">
+                            <img src="<?php echo $movie['poster_path']; ?>"
+                                alt="<?php echo htmlspecialchars($movie['title']); ?>" class="movie-poster"
+                                onerror="this.src='/assets/images/default-poster.jpg'">
+                            <?php if (!empty($movie['is_premium'])): ?>
+                                <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+                            <?php endif; ?>
+                        </div>
                         <div class="movie-info">
                             <h3><?php echo htmlspecialchars($movie['title']); ?></h3>
                             <p><?php echo $movie['release_year']; ?></p>
@@ -263,6 +278,27 @@ ob_start();
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
     margin: 0;
+}
+
+.poster-wrapper {
+    position: relative;
+}
+
+.premium-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: gold;
+    color: black;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 @media (max-width: 768px) {

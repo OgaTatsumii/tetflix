@@ -153,6 +153,34 @@ ob_start();
     background: rgba(0, 0, 0, 0.4);
     border-radius: 4px;
     margin-top: 20px;
+    color: #f44336;
+    font-size: 18px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid #f44336;
+}
+
+.search-no-results i {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.search-found {
+    text-align: center;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    margin-top: 20px;
+    color: #4CAF50;
+    font-size: 18px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-left: 4px solid #4CAF50;
+}
+
+.search-found i {
+    margin-right: 10px;
+    font-size: 20px;
 }
 </style>
 
@@ -196,7 +224,8 @@ ob_start();
         </div>
     </div>
 
-    <?php if ($movies): ?>
+    <!-- Common SQLi -- -->
+    <!-- <?php if ($movies): ?>
     <div class="search-results-grid">
         <?php 
             $count = 0;
@@ -232,7 +261,31 @@ ob_start();
         <i class="fas fa-info-circle"></i> No movies found matching your criteria.
     </div>
     <?php endif; ?>
+    <?php endif; ?> -->
+
+    <!-- Boolean Based Blind SQLi -->
+    <!-- <?php if ($movies): ?>
+    <?php 
+        // Kiểm tra xem có kết quả nào không bằng cách đếm số dòng
+        $rowCount = $movies->rowCount();
+        if ($rowCount > 0):
+    ?>
+        <div class="search-found">
+            <i class="fas fa-check-circle"></i> Đã tìm thấy phim.
+        </div>
+    <?php else: ?>
+        <div class="search-no-results">
+            <i class="fas fa-info-circle"></i> Không tìm thấy phim.
+        </div>
     <?php endif; ?>
+<?php endif; ?> -->
+
+    <!-- Time Based Blind SQLi -->
+    <?php if ($movies): ?>
+        <div class="search-found">
+        <i class="fas fa-search"></i> Đã thực hiện tìm kiếm.
+        </div>
+        <?php endif; ?>
 </div>
 
 <script>

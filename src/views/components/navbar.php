@@ -31,8 +31,7 @@
                                 echo htmlspecialchars($_GET['keyword']);
                             }
                             ?>">
-                        <button type="button" class="search-btn">
-                            <i class="fas fa-search"></i>
+                        <button type="button" class="search-btn"> <i class="fas fa-search"></i>
                         </button>
                     </form>
                 </div>
